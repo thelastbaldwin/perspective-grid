@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Perspective Grid</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/91/three.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.1/dat.gui.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+    
+</head>
+<body>
+    <p id="info">
+        Aspect Ratio: <span></span>
+    </p>
+    <a id="download" href="#" download="grid.jpg">Download</a>
+    <div id="WebGL-output"></div>
+    <script id="vertex-shader" type="x-shader">
+        void main() {
+            gl_Position = projectionMatrix *
+            modelViewMatrix *
+            vec4(position,1.0);
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader">
+        #ifdef GL_ES
+        precision mediump float;
+        #endif
+
+        const float PI = 3.1415926535897932384626433832795;
+        const float TAU = 2. * PI;
+
+        uniform vec2 u_resolution;
+        uniform float u_lvp;
+        uniform float u_rvp;
+        uniform float u_hl;
+        uniform float u_lineCount;
+        uniform float u_lineThickness;
+
+        float starBurst(vec2 st, vec2 target, float decay, float numLines){
+            //decay should get exponentially closer to 1 as the distance increases
+            //tricky for center vanishing point
+            vec2 dist = st - target;
+
+            return step(decay, sin(atan(dist.y, dist.x) * numLines));
+        }
+
+        void main() {
+            vec3 color = vec3(0.);
+
+            //normalized texture coordinate
+            vec2 st = gl_FragCoord.xy / u_resolution;
+
+            vec2 rvp = vec2(u_rvp, u_hl);
+            vec2 lvp = vec2(u_lvp, u_hl);
+
+            color += starBurst(st, rvp, 1.0 - u_lineThickness, u_lineCount);
+            color += starBurst(st, lvp, 1.0 - u_lineThickness, u_lineCount);
+
+            color += 1.0 - step(0.0015, distance(st.y, u_hl));
+
+            gl_FragColor = vec4(1.0 - color, 1.);
+        }
+    </script>
+    <script src="./gui.js"></script>
+	<script src="./perspectiveGrid.js">
+	</script>
+</body>
+</html>

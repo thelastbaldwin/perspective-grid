@@ -1,0 +1,27 @@
+body{
+	margin: 0;
+    overflow: hidden;
+}
+
+#info {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 10px;
+    margin: 0;
+    background-color: #fff;
+}
+
+#download,
+#download:visited {
+    display: block;
+    padding: 10px;
+    box-sizing: border-box;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background-color: black;
+    font: 11px 'Lucida Grande', sans-serif;
+    color: #fff;
+    text-decoration: none;
+}
