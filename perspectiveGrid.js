@@ -37,6 +37,10 @@ function degToRad(deg){
     return deg * Math.PI / 180;
 }
 
+function getAspectRatio(){
+    return window.innerWidth / window.innerHeight;
+}
+
 
 // TODO: use this relative to the longest edge
 // returns the depth of the station point as a ratio of the FOV to longest edge
@@ -50,11 +54,11 @@ function getVPDistanceFromCenter(sp, angle){
 }
 
 function updateAspectRatioDisplay(){
-    document.querySelector("#info span").innerText = (window.innerWidth / window.innerHeight).toFixed(2);
+    document.querySelector("#info span").innerText = (getAspectRatio()).toFixed(2);
 }
 
 function onWindowResize(){
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = getAspectRatio();
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -70,7 +74,7 @@ function initScene(){
     render();
 }
 
-function setLVPAngle(rvpAngle){
+function setLVPAngleInGUI(rvpAngle){
     lvpAngle.setValue(90 - rvpAngle);
 }
 
@@ -89,9 +93,16 @@ function render(){
     const lvpAngle = degToRad(90 - controls.rvpAngle);
     const spLength = getSPLength(FOV);
 
+    // If the viewport orientation is portrait, the field of view would
+    // be based on the height, since that would be the lonngest edge. If this
+    // is the case, then the distance for the VP's needs to be scaled
+    const portraitMultiplier = getAspectRatio() < 1 
+        ? window.innerHeight / window.innerWidth
+        : 1;
+
     //.5 is the normalized center of the frame, since 0 and 1 are the edges
-    const RVP = .5 + getVPDistanceFromCenter(spLength, rvpAngle);
-    const LVP = .5 - getVPDistanceFromCenter(spLength, lvpAngle);
+    const RVP = .5 + getVPDistanceFromCenter(spLength, rvpAngle) * portraitMultiplier;
+    const LVP = .5 - getVPDistanceFromCenter(spLength, lvpAngle) * portraitMultiplier;
 
     updateUniforms({
         u_resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
@@ -101,8 +112,9 @@ function render(){
         u_rvp: RVP,
         u_lineThickness: controls.lineThickness
     });
-    setLVPAngle(controls.rvpAngle);
-    // console.log(controls.lvpAngle);
+
+    setLVPAngleInGUI(controls.rvpAngle);
+
     renderer.render(scene, camera);
     requestAnimationFrame(render);
 }
