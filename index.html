@@ -29,11 +29,13 @@
         const float TAU = 2. * PI;
 
         uniform vec2 u_resolution;
+        uniform float u_cvp;
         uniform float u_lvp;
         uniform float u_rvp;
-        uniform float u_hl;
+        uniform float u_hl; 
         uniform float u_lineCount;
         uniform float u_lineThickness;
+        uniform float u_numPoints;
 
         float starBurst(vec2 st, vec2 target, float decay, float numLines){
             //decay should get exponentially closer to 1 as the distance increases
@@ -43,6 +45,11 @@
             return step(decay, sin(atan(dist.y, dist.x) * numLines));
         }
 
+        float horizontalLine(vec2 st, float count){
+            return step(0.5 - u_lineThickness * .15, sin((PI + st.x * TAU * count / 2.) + 1. ) /2.);
+        }
+
+
         void main() {
             vec3 color = vec3(0.);
 
@@ -51,11 +58,19 @@
 
             vec2 rvp = vec2(u_rvp, u_hl);
             vec2 lvp = vec2(u_lvp, u_hl);
+            vec2 cvp = vec2(0.5, u_cvp);
 
             color += starBurst(st, rvp, 1.0 - u_lineThickness, u_lineCount);
             color += starBurst(st, lvp, 1.0 - u_lineThickness, u_lineCount);
 
-            color += 1.0 - step(0.0015, distance(st.y, u_hl));
+            // horizon line
+            color += 1.0 - step(u_lineThickness * .2, distance(st.y, u_hl));
+
+            if (u_numPoints == 2.0){
+                color += horizontalLine(st, u_lineCount);
+            } else {
+                color += starBurst(st, cvp, 1.0 - u_lineThickness, u_lineCount * 2.0);
+            }
 
             gl_FragColor = vec4(1.0 - color, 1.);
         }
