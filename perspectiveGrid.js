@@ -26,14 +26,14 @@ const quadMaterial = new THREE.ShaderMaterial({
     vertexShader: vertexShader,
     fragmentShader: fragmentShader
 });
-const quad = new THREE.Mesh(quadGeometry, quadMaterial);
+const gridQuad = new THREE.Mesh(quadGeometry, quadMaterial);
 
 camera.position.x = 0;
 camera.position.y =	0;
 camera.position.z = 100;
 camera.lookAt(scene.position);
 scene.add(camera);
-scene.add(quad);
+scene.add(gridQuad);
 
 function degToRad(deg){
     return deg * Math.PI / 180;
