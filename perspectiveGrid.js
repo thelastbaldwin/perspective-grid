@@ -58,6 +58,7 @@ function updateAspectRatioDisplay(){
     document.querySelector("#info span").innerText = (getAspectRatio(window.innerWidth, window.innerHeight)).toFixed(2);
 }
 
+//TODO: throttle this function
 function onWindowResize(){
     camera.aspect = getAspectRatio();
     camera.updateProjectionMatrix();
