@@ -2,6 +2,8 @@
 
     A tool for creating 2 and 3 point perspective grid underlays
 
+[Live Demo](http://steveminor.net/perspective-grid)
+
 ### Controls
 
  * cvpAngle - Center vanishing point vertical angle. Use this to ajust the 3rd vanishing point up and down when creating a 3-point pespective grid. 
